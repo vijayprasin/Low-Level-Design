@@ -1,0 +1,96 @@
+Design Traffic Light Controller:
+===============================
+
+Design the Color model used by a TrafficLight controller. 
+The controller displays one colour at a time and moves through the same repeating cycle: red, green, yellow, then back to red.
+
+The TrafficLight class is provided. 
+Complete the missing Color enum—or the closest enum-like type in your language—so the controller has everything it needs to behave as follows:
+
+*TrafficLight(String startColor) starts on RED, GREEN, or YELLOW, matching the input without regard to case. An unrecognized value defaults to RED.
+*String getColor() returns the current colour's name.
+*int getDuration() returns the current colour's duration: RED lasts 30 seconds, GREEN lasts 25, and YELLOW lasts 5.
+*String next() advances once through the cycle and returns the new colour's name.
+*String describe() returns the current colour and duration in the exact format "<COLOR> (<duration>s)", such as "RED (30s)".
+
+Each colour should know both how long it lasts and which colour follows it:
+RED (30s) -> GREEN (25s) -> YELLOW (5s) -> RED (30s)
+Read the supplied controller carefully to see the exact fields, methods, or lookup tables expected from Color in your language. 
+Do not duplicate the cycle rules inside the controller.
+
+CODE:
+=====
+
+public enum Color
+{
+    RED,
+    GREEN,
+    YELLOW
+}
+
+public static class ColorExtensions
+{
+    // Each color's duration
+    public static int Duration(this Color color)
+    {
+        return color switch
+        {
+            Color.RED => 30,
+            Color.GREEN => 25,
+            Color.YELLOW => 5,
+            _ => 30
+        };
+    }
+
+    // Each color's next color
+    public static Color Next(this Color color)
+    {
+        return color switch
+        {
+            Color.RED => Color.GREEN,
+            Color.GREEN => Color.YELLOW,
+            Color.YELLOW => Color.RED,
+            _ => Color.RED
+        };
+    }
+}
+
+public class TrafficLight
+{
+    private Color current;
+
+    public TrafficLight(string startColor)
+    {
+        Color parsed;
+
+        if (!Enum.TryParse(startColor, true, out parsed) ||
+            !Enum.IsDefined(typeof(Color), parsed))
+        {
+            parsed = Color.RED;
+        }
+
+        current = parsed;
+    }
+
+    public string GetColor()
+    {
+        return current.ToString();
+    }
+
+    public int GetDuration()
+    {
+        return current.Duration();
+    }
+
+    public string Next()
+    {
+        current = current.Next();
+        return current.ToString();
+    }
+
+    public string Describe()
+    {
+        return current.ToString() + " (" + current.Duration() + "s)";
+    }
+}
+
